@@ -23,15 +23,21 @@ app.set('views', cfg.dir.views);
 app.use(compression());
 app.use(express.static(cfg.dir.static));
 
-// home page route
+// 0. Home page route
 app.get('/', (req, res) => {
-  res.render('message', { title: 'Hello World!' });
+  res.render('message', { title: 'Welcome to our database system assignment 2!' });
 });
 
-// another route
-app.get('/hello/', (req, res) => {
-  res.render('message', { title: 'Hello again!' });
+// 1. Search material purchasing information route
+app.get('/search-material-purchasing/', (req, res) => {
+  res.render('search_material_purchase', { title: 'Search material purchasing information' });
 });
+
+// 4. Report full information about the order for each category of a customer.
+app.get('/report-order-per-customer-category/', (req, res) => {
+    res.render('report_order_per_customer_category', { title: 'Report information about the order for each category of a customer' });
+})
+
 
 app.get('/login/', (req, res) => {
     res.render('login/login');
