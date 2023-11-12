@@ -1,4 +1,5 @@
 import express from "express";
+import compression from "compression";
 
 import { fileURLToPath } from "url";
 import { dirname, sep } from "path";
@@ -14,11 +15,17 @@ const cfg = {
 console.dir(cfg, { depth: null, color: true });
 
 const app = express();
+app.disable("x-powered-by");
 
+app.use(compression());
 app.use(express.static(cfg.dir.static));
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
+});
+
+app.use((req, res) => {
+  res.status(404).send("Not found");
 });
 
 app.listen(cfg.port, () => {
