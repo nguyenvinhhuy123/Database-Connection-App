@@ -1,0 +1,5 @@
++ When adding an order, add a "NEW" one first as a placeholder (having 0 bolt). 
+After adding the bolts to the cart (which means assigning the suitable "order_code" for each bolt)
+and change the status of the order to "ordered", the trigger will automatically calculate the number 
+of bolts and the price (and the remaining_price).
++ For further problems or features that you think should be implemented, feels free to ib me =))))))
