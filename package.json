@@ -4,11 +4,7 @@
   "description": "This is assignment 2 of Databases System Course - HCMUT",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nguyenvinhhuy123/Database-Connection-App.git"
+    "start": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
@@ -16,5 +12,9 @@
   "bugs": {
     "url": "https://github.com/nguyenvinhhuy123/Database-Connection-App/issues"
   },
-  "homepage": "https://github.com/nguyenvinhhuy123/Database-Connection-App#readme"
+  "homepage": "https://github.com/nguyenvinhhuy123/Database-Connection-App#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "type": "module"
 }
