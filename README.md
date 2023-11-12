@@ -1,2 +1,3 @@
-# Database Connection App
- Assignment 2 of Database Course -HCMUT
+# About Database Connection App
+
+This is assignment 2 of Databases System Course - HCMUT
