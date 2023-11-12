@@ -1,0 +1,51 @@
+<%- include('partials/_htmlhead'); -%>
+
+    <h2><%= title %></h2>
+    
+    <div class="mb-4">
+        <h4>Customer Information</h4>
+        <!-- Display customer information dynamically based on the customer ID -->
+        <p>Customer ID: <span id="customerId">123</span></p>
+        <p>Name: <span id="customerName">John Doe</span></p>
+        <p>Address: <span id="customerAddress">123 Main St, City</span></p>
+        <p>Phone Number: <span id="customerPhone">555-1234</span></p>
+    </div>
+
+    <!-- Report Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Category Code</th>
+                <th>Category Name</th>
+                <th>Color</th>
+                <th>Current Price</th>
+                <th>Quantity</th>
+                <th>Order Date</th>
+                <th>Purchase Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dummy Data -->
+            <tr>
+                <td>SILK001</td>
+                <td>Silk</td>
+                <td>Blue</td>
+                <td>$10.00</td>
+                <td>5</td>
+                <td>2023-11-12</td>
+                <td>$50.00</td>
+            </tr>
+            <tr>
+                <td>KHAKI002</td>
+                <td>Khaki</td>
+                <td>Beige</td>
+                <td>$8.00</td>
+                <td>3</td>
+                <td>2023-11-11</td>
+                <td>$24.00</td>
+            </tr>
+            <!-- Add more rows as needed -->
+        </tbody>
+    </table>
+
+<%- include('partials/_htmlfoot'); -%>

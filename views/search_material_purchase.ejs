@@ -1,0 +1,35 @@
+<%- include('partials/_htmlhead'); -%>
+
+    <h2><%= title %></h2>
+    
+    <!-- Search Form -->
+    <form class="form-inline my-4">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+    </form>
+
+    <!-- Search Results Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone Number</th>
+                <th>Supply Information</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dummy Data -->
+            <tr>
+                <td>Supplier 1</td>
+                <td>(555) 123-4567</td>
+                <td>Material A, Material B</td>
+            </tr>
+            <tr>
+                <td>Supplier 2</td>
+                <td>(555) 987-6543</td>
+                <td>Material C, Material D</td>
+            </tr>
+        </tbody>
+    </table>
+
+<%- include('partials/_htmlfoot'); -%>
