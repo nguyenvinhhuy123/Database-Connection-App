@@ -1,0 +1,59 @@
+<%- include('partials/_htmlhead'); -%>
+
+    <h2>
+        <%= title %>
+    </h2>
+    <form class="form-inline my-4">
+        <input class="form-control mr-sm-2" type="search" placeholder="Supplier ID" aria-label="Search">
+        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search Supplier</button>
+    </form>
+
+    <div class="mb-4">
+        <h4>Supplier Information</h4>
+        <!-- Display customer information dynamically based on the customer ID -->
+        <p>Supplier ID: <span id="supplierID">001</span></p>
+        <p>Name: <span id="supplierName">John Smith</span></p>
+        <p>Address: <span id="supplierAddress">125 Main St, City</span></p>
+        <p>Bank Account Number: <span id="supplierBankAccout">4442-9876-1952-2853</span></p>
+        <p>Tax Code: <span id="supplierTaxCode">4442-9876-1952-2853</span></p>
+        <p>Partner ID: <span id="supplierPartnerID">235</span></p>
+    </div>
+
+    <!-- Report Table -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Category Code</th>
+                <th>Category Name</th>
+                <th>Color</th>
+                <th>Current Price</th>
+                <th>Quantity</th>
+                <th>Import Date</th>
+                <th>Import Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Dummy Data -->
+            <tr>
+                <td>SILK001</td>
+                <td>Silk</td>
+                <td>Blue</td>
+                <td>$10.00</td>
+                <td>5</td>
+                <td>2023-1-1</td>
+                <td>$50.00</td>
+            </tr>
+            <tr>
+                <td>KHAKI002</td>
+                <td>Khaki</td>
+                <td>Beige</td>
+                <td>$8.00</td>
+                <td>3</td>
+                <td>2023-2-2</td>
+                <td>$24.00</td>
+            </tr>
+            <!-- Add more rows as needed -->
+        </tbody>
+    </table>
+
+    <%- include('partials/_htmlfoot'); -%>

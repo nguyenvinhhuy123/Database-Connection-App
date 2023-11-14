@@ -43,6 +43,14 @@ app.get("/add_new_supplier/", (req, res) => {
     title: "Add information for a new supplier",
   });
 });
+
+//3. List details of all categories which are provided by a supplier.
+app.get("/category_detail_by_supplier/", (req, res) => {
+  res.render("category_detail_by_supplier", {
+    title: "List details of all categories which are provided by a supplier",
+  });
+});
+
 // 4. Report full information about the order for each category of a customer.
 app.get("/report-order-per-customer-category/", (req, res) => {
   res.render("report_order_per_customer_category", {
