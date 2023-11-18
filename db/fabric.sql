@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS partner_staff;
 DROP TABLE IF EXISTS operational_staff;
 DROP TABLE IF EXISTS office_staff;
 DROP TABLE IF EXISTS category;
+DROP TABLE IF EXISTS admin_account;
 
 CREATE TABLE manager (
     manager_code INT AUTO_INCREMENT PRIMARY KEY,
@@ -165,6 +166,13 @@ CREATE TABLE category_current_price (
     PRIMARY KEY (cat_code, p_date, price),
     FOREIGN KEY (cat_code) REFERENCES category(cat_code)
 );
+
+CREATE TABLE admin_account (
+    account_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_account VARCHAR(50) UNIQUE,
+    user_password VARCHAR(50) NOT NULL DEFAULT 'admin'
+);
+
 
 
 

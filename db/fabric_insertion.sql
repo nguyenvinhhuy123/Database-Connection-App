@@ -166,3 +166,7 @@ VALUES
 (6, 4, '2023-11-03 14:30:00', 'Partial', 68.97),
 (8, 5, '2023-11-02 16:45:00', 'Full', 23.98);
 
+INSERT INTO admin_account (user_account)
+VALUES 
+('myadmin');
+
