@@ -1,3 +1,9 @@
+# MySQL mount volume
+data/
+
+# MacOS
+.DS_Store
+
 # Logs
 logs
 *.log

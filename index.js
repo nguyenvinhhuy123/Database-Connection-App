@@ -3,6 +3,7 @@ import compression from "compression";
 
 import { fileURLToPath } from "url";
 import { dirname, sep } from "path";
+import { testConnection } from "./db.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url)) + sep;
 const cfg = {
@@ -24,9 +25,11 @@ app.use(compression());
 app.use(express.static(cfg.dir.static));
 
 // 0. Home page route
-app.get("/", (req, res) => {
+app.get("/", async (req, res) => {
+  const data = await testConnection();
   res.render("message", {
     title: "Welcome to our database system assignment 2!",
+    message: JSON.stringify(data),
   });
 });
 
@@ -64,7 +67,9 @@ app.get("/login/", (req, res) => {
 
 // 404 errors
 app.use((req, res) => {
-  res.status(404).render("message", { title: "Not found" });
+  res
+    .status(404)
+    .render("message", { title: "Not found", message: "Page Not found!" });
 });
 
 app.listen(cfg.port, () => {
