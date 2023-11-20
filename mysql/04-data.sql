@@ -133,16 +133,16 @@ VALUES
 (4, 0, 'new', NULL, '2023-11-02 08:20:00', 5);
 
 -- Insert data into the 'bolt' table
-INSERT INTO bolt (cat_code, bolt_code, bolt_length, order_code)
+INSERT INTO bolt (cat_code, bolt_length, order_code)
 VALUES
-(7, 1, 5.5, 2),
-(7, 2, 4.5, 2),
-(7, 3, 3, NULL),
-(8, 4, 7.0, 6),
-(9, 5, 8.5, 6),
-(9, 6, 6.0, 6),
-(9, 7, 9.0, 8),
-(9, 8, 9.0, 8);
+(7, 5.5, 2),
+(7, 4.5, 2),
+(7, 3, NULL),
+(8, 7.0, 6),
+(9, 8.5, 6),
+(9, 6.0, 6),
+(9, 9.0, 8),
+(9, 9.0, 8);
 
 -- Update the status of some "new" orders to test the calculation of order price
 UPDATE customer_order
