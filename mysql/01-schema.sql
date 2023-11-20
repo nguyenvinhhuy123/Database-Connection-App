@@ -1,4 +1,4 @@
-CREATE DATABASE  IF NOT EXISTS fabric;
+CREATE DATABASE IF NOT EXISTS fabric;
 
 USE  fabric;
 
@@ -172,22 +172,3 @@ CREATE TABLE admin_account (
     user_account VARCHAR(50) UNIQUE,
     user_password VARCHAR(50) NOT NULL DEFAULT 'admin'
 );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

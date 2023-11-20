@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  fabricmysql:
+    image: mysql:8
+    env_file: .env
+    container_name: fabricmysql
+    volumes:
+      - ./mysql:/docker-entrypoint-initdb.d
+      - ./data:/var/lib/mysql
+    ports:
+      - "${MYSQL_PORT}:3306"
+    networks:
+      - net
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    depends_on:
+      - fabricmysql
+    ports:
+      - "${ADMINER_PORT}:8080"
+    networks:
+      - net
+
+volumes:
+  data:
+
+networks:
+  net:
