@@ -1,10 +1,12 @@
 import express from "express";
 import compression from "compression";
+import bodyParser from "body-parser";
 
 import { fileURLToPath } from "url";
 import { dirname, sep } from "path";
 import { testConnection } from "./db.js";
 
+import { authentication } from "./src/controller/auth.js";
 const __dirname = dirname(fileURLToPath(import.meta.url)) + sep;
 const cfg = {
   port: process.env.PORT || 3000,
@@ -18,14 +20,44 @@ console.dir(cfg, { depth: null, color: true });
 
 const app = express();
 app.disable("x-powered-by");
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set("view engine", "ejs");
 app.set("views", cfg.dir.views);
 app.use(compression());
 app.use(express.static(cfg.dir.static));
 
+app.get("/", (req, res) => {
+  res.redirect("/auth");
+});
+
+//auth action get method
+app.get("/auth", (req, res) => {
+  res.render("login/login");
+});
+
+// autth action post method: check for credential
+app.post("/auth", async (req, res) => {
+  var username = req.body.username;
+  var password = req.body.password;
+  if (!username || !password) {
+    return res.render("login/login", {
+      message: "Please enter both id and password",
+    });
+  } else {
+    //! Subject to change: change after setting up database
+    var auth_accepted = await authentication(username, password);
+    if (auth_accepted) {
+      return res.redirect("/home-page");
+    }
+  }
+  return res.render("login/login", {
+    message: "Username or password incorrect",
+  });
+});
+
 // 0. Home page route
-app.get("/", async (req, res) => {
+app.get("/home-page", async (req, res) => {
   const data = await testConnection();
   res.render("message", {
     title: "Welcome to our database system assignment 2!",
@@ -59,10 +91,6 @@ app.get("/report-order-per-customer-category/", (req, res) => {
   res.render("report_order_per_customer_category", {
     title: "Report information about the order for each category of a customer",
   });
-});
-
-app.get("/login/", (req, res) => {
-  res.render("login/login");
 });
 
 // 404 errors
