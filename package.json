@@ -4,7 +4,7 @@
   "description": "This is assignment 2 of Databases System Course - HCMUT",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "npx nodemon index.js"
   },
   "keywords": [],
   "author": "",
