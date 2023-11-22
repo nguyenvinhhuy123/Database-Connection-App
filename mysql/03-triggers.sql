@@ -31,7 +31,7 @@ BEGIN
     -- Get the order amount
     SELECT get_order_amount(NEW.order_code) INTO order_amount;
 
-    -- Check if the order status is 'ordered'
+    -- If the order is ordered (finish ordering),recount the number of bolts in each category and also increase the arrearage
     IF OLD.status = 'new' AND NEW.status = 'ordered' THEN
         -- Update the customer's arrearage
         UPDATE customer
@@ -41,6 +41,24 @@ BEGIN
         SET NEW.price = get_order_amount(NEW.order_code), 
 			NEW.remaining_price = get_order_amount(NEW.order_code),
             NEW.number_of_bolts = get_number_bolt(NEW.order_code);
+		
+        CALL update_category_count(); 
+    END IF;
+    
+    -- If the order is cancelled, put the bolts back to the categories and also reduce the arrearage
+    IF OLD.status = 'ordered' AND NEW.status = "cancelled" THEN 
+		UPDATE customer
+        SET arrearage_amount = arrearage_amount - order_amount
+        WHERE customer_code = NEW.customer_code;
+        
+        SET NEW.price = 0, 
+			NEW.remaining_price = 0,
+            NEW.number_of_bolts = 0;
+		
+        UPDATE bolt
+        SET order_code = NULL 
+        WHERE bolt.order_code = NEW.order_code;
+        CALL update_category_count(); 
     END IF;
 
     -- Get the customer's arrearage amount

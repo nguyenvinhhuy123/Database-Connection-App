@@ -39,7 +39,8 @@ VALUES
 ('Fabric World', '789 Fabric Street, Textile City, State', '123456789012', '9876543210', 1),
 ('Textile Emporium', '456 Textile Avenue, Fabrictown, State', '456789012345', '1234567890', 2),
 ('Silk Haven', '321 Silk Lane, Materialville, State', '789012345678', '3456789012', 3),
-('Silk Agency', '876 Poly Street, Synthetictown, State', '890123456789', '6789012345', 4);
+('Silk Agency', '876 Poly Street, Synthetictown, State', '890123456789', '6789012345', 4),
+('Master Bolt', '589 Golden Street, Synthetictown, State', '521123445996', '1234512345', 5);
 
 -- Insert data into the 'supplier_phone' table
 INSERT INTO supplier_phone (sup_code, phone_number)
@@ -76,7 +77,7 @@ VALUES
 (5, '9012345678'),
 (5, '0123456789');
 
--- Merge data into the 'category' table
+-- Insert data into the 'category' table
 INSERT INTO category (cat_name, quantity, color, in_order)
 VALUES
 ('Silk', 1, 'Red', true),
@@ -84,40 +85,60 @@ VALUES
 ('Khaki', 1, 'Green', true),
 ('Crewel', 2, 'Blue', true),
 ('Crewel', 1, 'Blue', true),
-('Crewel', 1, 'Blue', true),  
+('Jacquard', 3, 'Pink', true),
+('Faux Silk', 2, 'Purple', true),
+('Damask', 1, 'Yellow', true),
 ('Silk', 3, 'Red', false),
 ('Khaki', 1, 'Green', false),
-('Crewel', 4, 'Blue', false);
+('Crewel', 3, 'Blue', false),
+('Jacquard', 3, 'Pink', false),
+('Faux Silk', 2, 'Purple', false),
+('Damask', 1, 'Yellow', false);
 
 -- Insert data into the 'category_current_price' table
 INSERT INTO category_current_price (cat_code, p_date, price)
 VALUES
-(7, '2023-10-28', 10.99),
-(8, '2023-10-28', 15.99),
-(9, '2023-10-28', 20.99),
-(7, '2023-10-29', 25.99),
-(8, '2023-10-29', 30.99),
-(9, '2023-10-29', 12.99),
-(7, '2023-10-30', 17.99),
-(8, '2023-10-30', 22.99),
-(9, '2023-10-30', 27.99);
+(9, '2023-10-28', 10.99),
+(10, '2023-10-28', 15.99),
+(11, '2023-10-28', 20.99),
+(12, '2023-10-28', 12.99),
+(13, '2023-10-28', 17.99),
+(14, '2023-10-28', 19.99),
+(9, '2023-10-29', 25.99),
+(10, '2023-10-29', 30.99),
+(11, '2023-10-29', 12.99),
+(12, '2023-10-29', 20.99),
+(13, '2023-10-29', 25.99),
+(14, '2023-10-29', 27.99),
+(9, '2023-10-30', 17.99),
+(10, '2023-10-30', 22.99),
+(11, '2023-10-30', 27.99),
+(12, '2023-10-30', 26.99),
+(13, '2023-10-30', 20.99),
+(14, '2023-10-30', 23.99);
 
 -- Insert data into the 'import_order' table
 INSERT INTO import_order (purchase_price, import_date)
 VALUES
-(50.00, '2023-11-01'),
-(30.00, '2023-11-01'),
-(40.00, '2023-11-01');
+(100.00, '2023-10-28'),	
+(150.00, '2023-10-28'),
+(220.00, '2023-10-28'),
+(260.00, '2023-10-28'),
+(100.00, '2023-10-28'),
+(230.00, '2023-10-28'),
+(170.00, '2023-10-28');
 
 -- Insert data into the 'supply' table
 INSERT INTO supply (import_code, cat_code, sup_code)
 VALUES
-(1, 1, 1),
-(1, 5, 1),
-(2, 2, 2),
-(2, 4, 2),
-(3, 3, 4),
-(3, 6, 4);
+(1, 7, 1),
+(1, 8, 1),
+(2, 3, 2),
+(3, 4, 3),
+(4, 5, 3),
+(5, 1, 4),
+(6, 2, 4),
+(7, 6, 5);
 
 -- Insert data into the 'customer_order' table
 INSERT INTO customer_order (opcode, number_of_bolts, status, reason, process_datetime, customer_code)
@@ -135,14 +156,19 @@ VALUES
 -- Insert data into the 'bolt' table
 INSERT INTO bolt (cat_code, bolt_length, order_code)
 VALUES
-(7, 5.5, 2),
-(7, 4.5, 2),
-(7, 3, NULL),
-(8, 7.0, 6),
-(9, 8.5, 6),
-(9, 6.0, 6),
-(9, 9.0, 8),
-(9, 9.0, 8);
+(9, 5.5, 2),
+(9, 4.5, 2),
+(9, 3, NULL),
+(10, 5, 6),
+(11, 8.5, 6),
+(11, 6.0, NULL),
+(11, 2, NULL),
+(12, 2.5, 8),
+(12, 6, NULL), 
+(12, 6.5, NULL),
+(13, 3, NULL),
+(13, 3.5, 8),
+(14, 4, 8);
 
 -- Update the status of some "new" orders to test the calculation of order price
 UPDATE customer_order
@@ -160,11 +186,14 @@ WHERE order_code = 8;
 -- Insert data into the 'paid_by_payment' table
 INSERT INTO paid_by_payment (order_code, customer_code, pay_datetime, type, amount)
 VALUES
-(2, 1, '2023-11-01 13:30:00', 'Partial', 27.99),
-(2, 1, '2023-11-01 14:45:00', 'Partial', 27.99),
-(6, 4, '2023-11-03 12:15:00', 'Partial', 10),
-(6, 4, '2023-11-03 14:30:00', 'Partial', 68.97),
-(8, 5, '2023-11-02 16:45:00', 'Full', 23.98);
+(2, 1, '2023-11-01 13:30:00', 'Partial', 100),
+(2, 1, '2023-11-01 14:45:00', 'Partial', 79.9),
+(6, 4, '2023-11-03 12:15:00', 'Partial', 300),
+(6, 4, '2023-11-03 14:30:00', 'Partial', 20.00);
+
+UPDATE customer_order 
+SET status = 'cancelled', reason = 'Do not want to buy'
+WHERE order_code = 8;
 
 INSERT INTO admin_account (user_account)
 VALUES 

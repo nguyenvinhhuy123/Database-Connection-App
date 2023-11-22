@@ -1,7 +1,13 @@
 DROP PROCEDURE IF EXISTS check_payment_common_logic;
 DROP PROCEDURE IF EXISTS check_and_update_customer_status;
+DROP PROCEDURE IF EXISTS update_bolts;
 DROP FUNCTION IF EXISTS get_order_amount;
 DROP FUNCTION IF EXISTS get_number_bolt;
+DROP PROCEDURE IF EXISTS update_category_count;
+DROP PROCEDURE IF EXISTS get_orders_from_supplier;
+DROP PROCEDURE IF EXISTS update_category_price_percentage;
+DROP PROCEDURE IF EXISTS get_supplier_payments;
+DROP PROCEDURE IF EXISTS sort_suppliers_by_category_count;
 
 DELIMITER //
 -- Calculate the price of each order
@@ -9,7 +15,7 @@ CREATE FUNCTION get_order_amount(orderCode INT) RETURNS DECIMAL(10, 2) READS SQL
 BEGIN
     DECLARE orderAmount DECIMAL(10, 2);
 
-    SELECT COALESCE(SUM(ccp.price), 0) INTO orderAmount
+    SELECT COALESCE(SUM(ccp.price * b.bolt_length), 0) INTO orderAmount
     FROM customer_order co
     JOIN bolt b ON co.order_code = b.order_code
     JOIN (
@@ -34,6 +40,38 @@ BEGIN
 	GROUP BY order_code;
 
     RETURN number_bolt;
+END //
+
+-- Calculate the number of bolt of each category
+CREATE PROCEDURE update_category_count()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE temp_cat_code INT;
+    DECLARE new_quantity INT;
+
+    -- Loop through each bolt in the order
+    DECLARE cur CURSOR FOR
+        SELECT cat_code AS temp_cat_code, COUNT(*) AS new_quantity
+        FROM bolt
+        WHERE order_code IS NULL
+        GROUP BY cat_code;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    OPEN cur;
+
+    read_loop: LOOP
+        FETCH cur INTO temp_cat_code, new_quantity;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+
+        -- Update the quantity of bolts in the category
+        UPDATE category
+        SET quantity = new_quantity
+        WHERE cat_code = temp_cat_code;
+    END LOOP;
+
+    CLOSE cur;
 END //
 
 -- Check for the payment date, customers' arrearage and order status
@@ -78,12 +116,12 @@ BEGIN
     IF remaining_amount = 0 THEN
         -- Fully paid
         UPDATE customer_order
-        SET status = 'Full Paid', remaining_price = remaining_amount
+        SET status = 'full paid', remaining_price = remaining_amount
         WHERE order_code = order_code_param;
     ELSE
         -- Partial paid
         UPDATE customer_order
-        SET status = 'Partial Paid', remaining_price = remaining_amount
+        SET status = 'partial paid', remaining_price = remaining_amount
         WHERE order_code = order_code_param;
     END IF;
 END //
@@ -123,11 +161,83 @@ BEGIN
         -- Update customer status if warning time exceeds 6 months
         IF @months_difference > 6 THEN
             UPDATE customer
-            SET debt_mode = 'bad_debt'
+            SET debt_mode = 'bad debt'
             WHERE customer_code = customer_code_var;
         END IF;
     END LOOP;
 
     CLOSE customer_cursor;
 END //
+
+-- Increase a category selling price by a percentage of those provided by all suppliers from a specific date
+CREATE PROCEDURE update_category_price_percentage(
+    IN category_name_param VARCHAR(255),
+    IN percentage DECIMAL(5, 2),
+    IN effective_date_param DATE
+)
+BEGIN
+    DECLARE cat_code_var INT;
+
+    -- Get the category code based on the provided category name
+    SELECT cat_code INTO cat_code_var
+    FROM category
+    WHERE cat_name = category_name_param;
+
+    -- Check if the category exists
+    IF cat_code_var IS NOT NULL THEN
+        -- Update the selling price of the specified category by the given percentage
+        UPDATE category_current_price
+        SET price = price * (1 + percentage / 100)
+        WHERE cat_code = cat_code_var AND p_date >= effective_date_param;
+    END IF;
+END //
+
+-- Select all orders containing bolt from the supplier with input name
+CREATE PROCEDURE get_orders_from_supplier(IN supplierName VARCHAR(255))
+BEGIN
+    SELECT co.*
+    FROM customer_order co
+    JOIN (
+        SELECT DISTINCT co.order_code
+        FROM customer_order co
+        JOIN bolt b ON co.order_code = b.order_code
+        JOIN category c1 ON c1.cat_code = b.cat_code
+        LEFT JOIN category c2 ON c1.cat_name = c2.cat_name AND c2.in_order = TRUE
+        JOIN supply s ON c2.cat_code = s.cat_code
+        JOIN supplier sup ON s.sup_code = sup.sup_code
+        WHERE sup.sup_name = supplierName
+    ) AS distinct_orders
+    ON co.order_code = distinct_orders.order_code;
+END //
+
+--  Calculate the total purchase price the agency has to pay for each supplier (since the output is "list of payment,
+--  I will not put SUM to the purchase_price. 
+CREATE PROCEDURE get_supplier_payments(IN supplierCode INT)
+BEGIN
+    SELECT DISTINCT io.import_code, io.import_date, io.purchase_price
+    FROM import_order io
+    JOIN supply s ON io.import_code = s.import_code
+    JOIN supplier sup ON s.sup_code = sup.sup_code
+    WHERE s.sup_code = supplierCode;
+END //
+
+-- Sort the suppliers in increasing number of categories they provide in a period of time 
+CREATE PROCEDURE sort_suppliers_by_category_count(
+    IN startDate DATE,
+    IN endDate DATE
+)
+BEGIN
+    SELECT sup.sup_code, sup.sup_name, COUNT(DISTINCT c.cat_name, c.color) AS category_count
+    FROM supplier sup
+    LEFT JOIN supply sp ON sup.sup_code = sp.sup_code
+    LEFT JOIN category c ON sp.cat_code = c.cat_code
+    WHERE sp.import_code IN (
+        SELECT io.import_code
+        FROM import_order io
+        WHERE io.import_date BETWEEN startDate AND endDate
+    )
+    GROUP BY sup.sup_code, sup.sup_name
+    ORDER BY category_count ASC;
+END //
+
 DELIMITER ;
