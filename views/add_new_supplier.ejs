@@ -4,22 +4,26 @@
         <%= title %>
     </h2>
     <form class="form-group">
+        <% if(typeof message !="undefined" && message) { %>
+            <h5>
+                <%= message %>
+            </h5>
+            <%} %>
+                <label for="name">Name:</label><br>
+                <input type="text" id="name" name="name"><br>
 
-        <label for="name">Name:</label><br>
-        <input type="text" id="name" name="name"><br>
+                <label for="address">Address:</label><br>
+                <input type="text" id="address" name="address"><br>
 
-        <label for="address">Address:</label><br>
-        <input type="text" id="address" name="address"><br>
+                <label for="bank">Bank Account Number:</label><br>
+                <input type="number" id="bank" name="bank"><br>
 
-        <label for="bank">Bank Account Number:</label><br>
-        <input type="number" id="bank" name="bank"><br>
+                <label for="tax">Tax Serial Number:</label><br>
+                <input type="number" id="tax" name="tax"><br>
 
-        <label for="tax">Tax Serial Number:</label><br>
-        <input type="number" id="tax" name="tax"><br>
+                <label for="partner">Partner ID:</label><br>
+                <input type="number" id="partner" name="partner"><br>
 
-        <label for="partner">Partner ID:</label><br>
-        <input type="number" id="partner" name="partner"><br>
-
-        <input type="submit" value="Add New Supplier">
+                <input type="submit" value="Add New Supplier">
     </form>
     <%- include('partials/_htmlfoot'); -%>
