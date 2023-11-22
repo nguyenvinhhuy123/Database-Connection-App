@@ -7,6 +7,8 @@ import { dirname, sep } from "path";
 import { testConnection } from "./db.js";
 
 import { authentication } from "./src/controller/auth.js";
+import { add_new_supplier } from "./src/service/add_supplier.js";
+
 const __dirname = dirname(fileURLToPath(import.meta.url)) + sep;
 const cfg = {
   port: process.env.PORT || 3000,
@@ -76,6 +78,39 @@ app.get("/search-material-purchasing/", (req, res) => {
 app.get("/add_new_supplier/", (req, res) => {
   res.render("add_new_supplier", {
     title: "Add information for a new supplier",
+  });
+});
+app.post("/add_new_supplier/", async (req, res) => {
+  var name = req.body.name;
+  var address = req.body.address;
+  var bank_id = req.body.bank;
+  var tax_id = req.body.tax;
+  var partner_id = req.body.partner;
+
+  if (!name || !address || !bank_id || !tax_id || !partner_id) {
+    return res.render("add_new_supplier", {
+      title: "Add information for a new supplier",
+      message: "Please enter a value for all boxes",
+    });
+  }
+
+  var add_this_supplier = await add_new_supplier(
+    name,
+    address,
+    bank_id,
+    tax_id,
+    partner_id
+  );
+
+  if (!add_this_supplier) {
+    return res.render("add_new_supplier", {
+      title: "Add information for a new supplier",
+      message: "Add new supplier unsuccessful",
+    });
+  }
+  return res.render("add_new_supplier", {
+    title: "Add information for a new supplier",
+    message: "Add new supplier successful",
   });
 });
 
