@@ -27,6 +27,7 @@ export async function authentication(username, password) {
         `,
     [username, password]
   );
+  //* If there is a match username and password
   if (database_result.length > 0) return true;
   else return false;
 }
