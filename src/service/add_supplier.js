@@ -16,5 +16,5 @@ var db = await mysqlPromise.createPool({
 });
 
 export async function add_new_supplier(name, address, bank, tax, partner) {
-  return;
+  return false;
 }
