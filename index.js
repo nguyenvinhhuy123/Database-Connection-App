@@ -30,8 +30,15 @@ app.set("views", cfg.dir.views);
 app.use(compression());
 app.use(express.static(cfg.dir.static));
 
+var credential = false
 app.get("/", (req, res) => {
-  res.redirect("/auth");
+  if (!credential) return res.redirect("/auth");
+  return res.redirect("/home-page");
+});
+//Log out action
+app.post("/log_out", (req, res) => {
+  credential = false;
+  res.redirect("/");
 });
 
 //auth action get method
@@ -51,6 +58,7 @@ app.post("/auth", async (req, res) => {
     //! Subject to change: change after setting up database
     var auth_accepted = await authentication(username, password);
     if (auth_accepted) {
+      credential = true;
       return res.redirect("/home-page");
     }
   }
