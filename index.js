@@ -8,6 +8,7 @@ import { testConnection } from "./db.js";
 
 import { authentication } from "./src/service/auth.js";
 import { add_new_supplier } from "./src/service/add_supplier.js";
+import { cat_detail_by_supplier } from "./src/service/cat_detail_by_supplier.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url)) + sep;
 const cfg = {
@@ -127,10 +128,24 @@ app.get("/category_detail_by_supplier/", (req, res) => {
 app.post("/category_detail_by_supplier/", (req, res) => {
   var supplier_id = req.body.search_id;
   console.log(supplier_id);
-  return res.render("category_detail_by_supplier", {
+  const {supplier_data, cat_list} = cat_detail_by_supplier(supplier_id);
+  if (!supplier_data) { 
+    return res.render("category_detail_by_supplier", {
     title: "Add information for a new supplier",
     message: "Can not find this supplier",
     found_supplier: false,
+  });
+  }
+  if (!cat_list) { 
+      return res.render("category_detail_by_supplier", {
+      title: "Add information for a new supplier",
+      message: "This supplier does not have any supplied category",
+      found_supplier: true,
+  });
+  }
+  return res.render("category_detail_by_supplier", {
+    title: "Add information for a new supplier",
+    found_supplier: true,
   });
 });
 
