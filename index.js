@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import { dirname, sep } from "path";
 import { testConnection } from "./db.js";
 
-import { authentication } from "./src/controller/auth.js";
+import { authentication } from "./src/service/auth.js";
 import { add_new_supplier } from "./src/service/add_supplier.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url)) + sep;
@@ -38,7 +38,7 @@ app.get("/auth", (req, res) => {
   res.render("login/login");
 });
 
-// autth action post method: check for credential
+// auth action post method: check for credential
 app.post("/auth", async (req, res) => {
   var username = req.body.username;
   var password = req.body.password;
@@ -90,7 +90,8 @@ app.post("/add_new_supplier/", async (req, res) => {
   if (!name || !address || !bank_id || !tax_id || !partner_id) {
     return res.render("add_new_supplier", {
       title: "Add information for a new supplier",
-      message: "Please enter a value for all boxes",
+      message: "Please enter all information",
+      add_successful: false,
     });
   }
 
@@ -106,11 +107,13 @@ app.post("/add_new_supplier/", async (req, res) => {
     return res.render("add_new_supplier", {
       title: "Add information for a new supplier",
       message: "Add new supplier unsuccessful",
+      add_successful: false,
     });
   }
   return res.render("add_new_supplier", {
     title: "Add information for a new supplier",
     message: "Add new supplier successful",
+    add_successful: true,
   });
 });
 
@@ -118,6 +121,16 @@ app.post("/add_new_supplier/", async (req, res) => {
 app.get("/category_detail_by_supplier/", (req, res) => {
   res.render("category_detail_by_supplier", {
     title: "List details of all categories which are provided by a supplier",
+  });
+});
+
+app.post("/category_detail_by_supplier/", (req, res) => {
+  var supplier_id = req.body.search_id;
+  console.log(supplier_id);
+  return res.render("category_detail_by_supplier", {
+    title: "Add information for a new supplier",
+    message: "Can not find this supplier",
+    found_supplier: false,
   });
 });
 
