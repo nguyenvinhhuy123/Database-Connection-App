@@ -35,8 +35,10 @@ app.get("/", (req, res) => {
   if (!credential) return res.redirect("/auth");
   return res.redirect("/home-page");
 });
+app.get("/log_out");
 //Log out action
 app.post("/log_out", (req, res) => {
+  console.log("logged out");
   credential = false;
   res.redirect("/");
 });
