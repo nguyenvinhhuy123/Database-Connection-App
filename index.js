@@ -97,8 +97,8 @@ app.post("/add_new_supplier/", async (req, res) => {
   var bank_id = req.body.bank;
   var tax_id = req.body.tax;
   var partner_id = req.body.partner;
-
-  if (!name || !address || !bank_id || !tax_id || !partner_id) {
+  var phone_number = req.body.phone;
+  if (!name || !address || !bank_id || !tax_id || !partner_id || !phone_number) {
     return res.render("add_new_supplier", {
       title: "Add information for a new supplier",
       message: "Please enter all information",
@@ -111,7 +111,8 @@ app.post("/add_new_supplier/", async (req, res) => {
     address,
     bank_id,
     tax_id,
-    partner_id
+    partner_id,
+    phone_number
   );
 
   if (!add_this_supplier) {
