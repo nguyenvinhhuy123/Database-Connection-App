@@ -11,12 +11,7 @@ export async function authentication(username, password) {
               WHERE user_account = ?
               AND user_password = ?
           `,
-        [username, password],
-        function (err) { 
-          if (err) { 
-            throw err;
-          }
-        }
+        [username, password]
     );
       //* If there is a match username and password
       if (database_result.length > 0) return true;

@@ -30,6 +30,18 @@ export async function add_new_supplier(name, address, bank, tax, partner, phone)
   try {
       var supplier_value = [name, address, bank, tax, partner]
       var supplier_id;
+
+      var [check_phone] = await database_pool.query(
+        `
+        SELECT *
+        FROM supplier_phone
+        WHERE phone_number = ?
+        `,
+        phone
+    );
+    if (check_phone.length > 0) { 
+      throw new Error("Phone number existed already!!")
+    }
       var insert_supplier_sql = `
         INSERT INTO supplier
         (sup_name, address, bank_account, tax_code, partner_code)
@@ -37,13 +49,10 @@ export async function add_new_supplier(name, address, bank, tax, partner, phone)
       `
       const [add_supplier_successful] = await database_pool.query(
         insert_supplier_sql,
-        [[supplier_value]],
-        (err, res) => {
-          if (err) throw err;
-          console.log("Added supplier with ID :" + res.insertId);
-          supplier_id = res.insertId;
-        }
+        [[supplier_value]]
       );
+      console.log("Added supplier with ID :" + add_supplier_successful.insertId);
+      supplier_id = add_supplier_successful.insertId;
       var add_phone_sql = `
         INSERT INTO supplier_phone
         (sup_code, phone_number)
@@ -51,14 +60,10 @@ export async function add_new_supplier(name, address, bank, tax, partner, phone)
       `
       const [add_phone_successful] = await database_pool.query(
         add_phone_sql,
-        [[supplier_id, phone]],
-        (err, res) => {
-          if (err) {
-            throw err;
-          }
-          console.log("Added supplier phone with ID :" + supplier_id);
-        }
+        [[[supplier_id, phone]]]
       )
+      
+      console.log("Added supplier phone with ID :" + add_phone_successful.insertId);
       return true;
     }
   catch (err) { 
