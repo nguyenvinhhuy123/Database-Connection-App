@@ -15,6 +15,41 @@ var db = await mysqlPromise.createPool({
   queueLimit: 0,
 });
 
-export async function add_new_supplier(name, address, bank, tax, partner) {
-  return false;
+export async function add_new_supplier(name, address, bank, tax, partner, phone) {
+  try {
+    var supplier_value = [name, address, bank, tax, partner]
+    var supplier_id;
+    var insert_supplier_sql = `
+      INSERT INTO supplier
+      (sup_name, address, bank_account, tax_code, partner_code)
+      = ? 
+    `
+    const [add_supplier_successful] = await db.query(
+      insert_supplier_sql,
+      supplier_value,
+      function (err, res) {
+        if (err) throw err;
+        console.log("Added supplier with ID :" + res.insertId);
+        supplier_id = res.insertId;
+      }
+    );
+    var add_phone_sql = `
+      INSERT INTO supplier_phone
+      (sup_code, phone_number)
+      = ?
+    `
+    const [add_phone_successful] = await db.query(
+      add_phone_sql,
+      [supplier_id, phone],
+      function (err, res) {
+        if (err) throw err;
+        console.log("Added supplier phone with ID :" + supplier_id);
+      }
+    )
+    return true;
+  }
+  catch (err) { 
+    console.log(err);
+    return false;
+  }
 }
