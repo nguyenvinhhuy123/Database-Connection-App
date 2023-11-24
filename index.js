@@ -101,8 +101,10 @@ app.post("/add_new_supplier/", async (req, res) => {
   var partner_id = req.body.partner;
   var phone_number = req.body.phone;
   if (!name || !address || !bank_id || !tax_id || !partner_id || !phone_number) {
+    const partner_id_list = await get_all_partner_id();
     return res.render("add_new_supplier", {
       title: "Add information for a new supplier",
+      id_list: partner_id_list,
       message: "Please enter all information",
       add_successful: false,
     });
@@ -118,17 +120,21 @@ app.post("/add_new_supplier/", async (req, res) => {
   );
 
   if (!add_this_supplier) {
+    const partner_id_list = await get_all_partner_id();
     return res.render("add_new_supplier", {
       title: "Add information for a new supplier",
-      message: "Add new supplier unsuccessful",
+      id_list: partner_id_list,
+      message: "Please enter all information",
       add_successful: false,
     });
   }
+  const partner_id_list = await get_all_partner_id();
   return res.render("add_new_supplier", {
-    title: "Add information for a new supplier",
-    message: "Add new supplier successful",
-    add_successful: true,
-  });
+      title: "Add information for a new supplier",
+      id_list: partner_id_list,
+      message: "Please enter all information",
+      add_successful: false,
+    });
 });
 
 //3. List details of all categories which are provided by a supplier.
