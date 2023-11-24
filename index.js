@@ -7,7 +7,7 @@ import { dirname, sep } from "path";
 import { testConnection } from "./db.js";
 
 import { authentication } from "./src/service/auth.js";
-import { add_new_supplier } from "./src/service/add_supplier.js";
+import { add_new_supplier, get_all_partner_id } from "./src/service/add_supplier.js";
 import { cat_detail_by_supplier } from "./src/service/cat_detail_by_supplier.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url)) + sep;
@@ -86,9 +86,11 @@ app.get("/search-material-purchasing/", (req, res) => {
 });
 
 //2. Add information for a new supplier.
-app.get("/add_new_supplier/", (req, res) => {
+app.get("/add_new_supplier/", async (req, res) => {
+  const partner_id_list = await get_all_partner_id();
   res.render("add_new_supplier", {
     title: "Add information for a new supplier",
+    id_list: partner_id_list
   });
 });
 app.post("/add_new_supplier/", async (req, res) => {
@@ -105,7 +107,7 @@ app.post("/add_new_supplier/", async (req, res) => {
       add_successful: false,
     });
   }
-
+  console.log(name);
   var add_this_supplier = await add_new_supplier(
     name,
     address,
