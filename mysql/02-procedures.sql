@@ -250,7 +250,7 @@ END //
 -- List details of all categories which are provided by a supplier
 CREATE PROCEDURE GetCategoryDetailsBySupplier(IN supplierCodeParam INT)
 BEGIN
-    SELECT c2.cat_code, c1.cat_name, c1.color, c2.quantity
+    SELECT DISTINCT c2.cat_code, c1.cat_name, c1.color, c2.quantity
     FROM category c1
     LEFT JOIN (
         SELECT * FROM category WHERE category.in_order = FALSE
