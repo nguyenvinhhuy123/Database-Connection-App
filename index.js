@@ -6,7 +6,10 @@ import { fileURLToPath } from "url";
 import { dirname, sep } from "path";
 import { testConnection } from "./db.js";
 
-import { authentication } from "./src/controller/auth.js";
+import { authentication } from "./src/service/auth.js";
+import { add_new_supplier, get_all_partner_id } from "./src/service/add_supplier.js";
+import { cat_detail_by_supplier } from "./src/service/cat_detail_by_supplier.js";
+
 const __dirname = dirname(fileURLToPath(import.meta.url)) + sep;
 const cfg = {
   port: process.env.PORT || 3000,
@@ -27,8 +30,17 @@ app.set("views", cfg.dir.views);
 app.use(compression());
 app.use(express.static(cfg.dir.static));
 
+var credential = false
 app.get("/", (req, res) => {
-  res.redirect("/auth");
+  if (!credential) return res.redirect("/auth");
+  return res.redirect("/home-page");
+});
+app.get("/log_out");
+//Log out action
+app.post("/log_out", (req, res) => {
+  console.log("logged out");
+  credential = false;
+  res.redirect("/");
 });
 
 //auth action get method
@@ -36,7 +48,7 @@ app.get("/auth", (req, res) => {
   res.render("login/login");
 });
 
-// autth action post method: check for credential
+// auth action post method: check for credential
 app.post("/auth", async (req, res) => {
   var username = req.body.username;
   var password = req.body.password;
@@ -48,6 +60,7 @@ app.post("/auth", async (req, res) => {
     //! Subject to change: change after setting up database
     var auth_accepted = await authentication(username, password);
     if (auth_accepted) {
+      credential = true;
       return res.redirect("/home-page");
     }
   }
@@ -73,16 +86,85 @@ app.get("/search-material-purchasing/", (req, res) => {
 });
 
 //2. Add information for a new supplier.
-app.get("/add_new_supplier/", (req, res) => {
+app.get("/add_new_supplier/", async (req, res) => {
+  const partner_id_list = await get_all_partner_id();
   res.render("add_new_supplier", {
     title: "Add information for a new supplier",
+    id_list: partner_id_list
   });
+});
+app.post("/add_new_supplier/", async (req, res) => {
+  var name = req.body.name;
+  var address = req.body.address;
+  var bank_id = req.body.bank;
+  var tax_id = req.body.tax;
+  var partner_id = req.body.partner;
+  var phone_number = req.body.phone;
+  if (!name || !address || !bank_id || !tax_id || !partner_id || !phone_number) {
+    const partner_id_list = await get_all_partner_id();
+    return res.render("add_new_supplier", {
+      title: "Add information for a new supplier",
+      id_list: partner_id_list,
+      message: "Please enter all information",
+      add_successful: false,
+    });
+  }
+  console.log(name);
+  var add_this_supplier = await add_new_supplier(
+    name,
+    address,
+    bank_id,
+    tax_id,
+    partner_id,
+    phone_number
+  );
+
+  if (!add_this_supplier) {
+    const partner_id_list = await get_all_partner_id();
+    return res.render("add_new_supplier", {
+      title: "Add information for a new supplier",
+      id_list: partner_id_list,
+      message: "Please enter all information",
+      add_successful: false,
+    });
+  }
+  const partner_id_list = await get_all_partner_id();
+  return res.render("add_new_supplier", {
+      title: "Add information for a new supplier",
+      id_list: partner_id_list,
+      message: "Please enter all information",
+      add_successful: false,
+    });
 });
 
 //3. List details of all categories which are provided by a supplier.
 app.get("/category_detail_by_supplier/", (req, res) => {
   res.render("category_detail_by_supplier", {
     title: "List details of all categories which are provided by a supplier",
+  });
+});
+
+app.post("/category_detail_by_supplier/", (req, res) => {
+  var supplier_id = req.body.search_id;
+  console.log(supplier_id);
+  const {supplier_data, cat_list} = cat_detail_by_supplier(supplier_id);
+  if (!supplier_data) { 
+    return res.render("category_detail_by_supplier", {
+    title: "Add information for a new supplier",
+    message: "Can not find this supplier",
+    found_supplier: false,
+  });
+  }
+  if (!cat_list) { 
+      return res.render("category_detail_by_supplier", {
+      title: "Add information for a new supplier",
+      message: "This supplier does not have any supplied category",
+      found_supplier: true,
+  });
+  }
+  return res.render("category_detail_by_supplier", {
+    title: "Add information for a new supplier",
+    found_supplier: true,
   });
 });
 

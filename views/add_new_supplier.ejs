@@ -3,8 +3,19 @@
     <h2>
         <%= title %>
     </h2>
-    <form class="form-group">
+    <form class="form-group" action="/add_new_supplier" , method="post">
 
+        <% if(typeof message !="undefined" && message) { %>
+            <%if (!add_successful) { %>
+                <div class="alert alert-danger" role="alert">
+                    <%= message %>
+                </div>
+            <%} else{ %>
+                <div class="alert alert-success" role="alert">
+                    <%= message %>
+                </div>
+            <% } %>
+        <%} %>
         <label for="name">Name:</label><br>
         <input type="text" id="name" name="name"><br>
 
@@ -12,14 +23,29 @@
         <input type="text" id="address" name="address"><br>
 
         <label for="bank">Bank Account Number:</label><br>
-        <input type="number" id="bank" name="bank"><br>
+        <input type="text" id="bank" name="bank" minlength="8" maxlength="12"><br>
 
         <label for="tax">Tax Serial Number:</label><br>
-        <input type="number" id="tax" name="tax"><br>
+        <input type="text" id="tax" name="tax" minlength="10" maxlength="10"><br>
 
         <label for="partner">Partner ID:</label><br>
-        <input type="number" id="partner" name="partner"><br>
+        <select
+        class="selectpicker" data-live-search="true" aria-label="Default select example"
+        type="number" id="partner" name="partner" >
+            <option selected>Partner ID</option>
+            <% if(typeof id_list !="undefined" && id_list) { %>
+                <% for(var i=0; i<id_list.length; i++) { %>
+                    <option value="<%= id_list[i] %>">
+                        <%= id_list[i] %>
+                    </option>
+                <% } %>
+            <% } %>
+        </select><br>
 
+        <label for="phone">Phone Number:</label><br>
+        <input type="text" id="phone" name="phone" minlength="10" maxlength="10"><br>
+
+        <br>
         <input type="submit" value="Add New Supplier">
     </form>
     <%- include('partials/_htmlfoot'); -%>
