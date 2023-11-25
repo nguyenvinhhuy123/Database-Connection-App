@@ -8,6 +8,9 @@ DROP PROCEDURE IF EXISTS get_orders_from_supplier;
 DROP PROCEDURE IF EXISTS update_category_price_percentage;
 DROP PROCEDURE IF EXISTS get_supplier_payments;
 DROP PROCEDURE IF EXISTS sort_suppliers_by_category_count;
+DROP PROCEDURE IF EXISTS GetCategoryDetailsBySupplier;
+DROP PROCEDURE IF EXISTS MaterialPurchasingInformation;
+DROP PROCEDURE IF EXISTS GenerateOrderReport;
 
 DELIMITER //
 -- Calculate the price of each order
@@ -15,9 +18,13 @@ CREATE FUNCTION get_order_amount(orderCode INT) RETURNS DECIMAL(10, 2) READS SQL
 BEGIN
     DECLARE orderAmount DECIMAL(10, 2);
 
-    SELECT COALESCE(SUM(ccp.price * b.bolt_length), 0) INTO orderAmount
+    SELECT COALESCE(SUM(CASE WHEN io.import_date >= '2020-09-01' AND c.cat_name = 'Silk' 
+							THEN ccp.price * 1.1 * b.bolt_length 
+                            ELSE ccp.price * b.bolt_length END), 0) INTO orderAmount
     FROM customer_order co
     JOIN bolt b ON co.order_code = b.order_code
+    JOIN import_order io ON b.import_code = io.import_code
+    JOIN category c ON b.cat_code = c.cat_code
     JOIN (
         SELECT cat_code, MAX(p_date) AS latest_date
         FROM category_current_price
@@ -238,6 +245,66 @@ BEGIN
     )
     GROUP BY sup.sup_code, sup.sup_name
     ORDER BY category_count ASC;
+END //
+
+-- List details of all categories which are provided by a supplier
+CREATE PROCEDURE GetCategoryDetailsBySupplier(IN supplierCodeParam INT)
+BEGIN
+    SELECT c2.cat_code, c1.cat_name, c1.color, c2.quantity
+    FROM category c1
+    LEFT JOIN (
+        SELECT * FROM category WHERE category.in_order = FALSE
+    ) c2 ON c1.cat_name = c2.cat_name AND c1.color = c2.color
+    JOIN supply sp ON c1.cat_code = sp.cat_code
+    JOIN supplier s ON sp.sup_code = s.sup_code
+    WHERE s.sup_code = supplierCodeParam;
+END //
+
+-- Search material purchasing information
+CREATE PROCEDURE MaterialPurchasingInformation()
+BEGIN
+    SELECT 
+        io.import_code, io.import_date, c.cat_name, c.color, c.quantity, 
+        sup.sup_name, GROUP_CONCAT(sp.phone_number) AS supplier_phone, io.purchase_price AS total_order_price
+    FROM import_order io
+    JOIN supply s ON io.import_code = s.import_code
+    JOIN category c ON s.cat_code = c.cat_code
+    JOIN supplier sup ON s.sup_code = sup.sup_code
+    LEFT JOIN supplier_phone sp ON sup.sup_code = sp.sup_code
+    GROUP BY io.import_code, io.import_date, c.cat_name, c.color, c.quantity, sup.sup_name, io.purchase_price;
+END //
+
+-- Make a report that provides full information about the order for each category of a customer.
+CREATE PROCEDURE GenerateOrderReport()
+BEGIN
+    SELECT 
+        co.order_code, CONCAT(c.first_name, " ", c.last_name) AS customer_name, GROUP_CONCAT(cp.phone_number) AS customer_phone, 
+        co.order_datetime, co.process_datetime, 
+        cat_bolt.cat_name, cat_bolt.color, cat_bolt.bolt_count,
+        co.price AS total_price, co.remaining_price AS debt_amount, co.status, co.reason, os.opcode, 
+        CONCAT(os.fname, " ", os.lname) AS operator_name 
+    FROM customer_order co
+    JOIN customer c ON co.customer_code = c.customer_code
+    LEFT JOIN 
+        (SELECT cat.cat_code, cat.cat_name, cat.color, COUNT(DISTINCT b.bolt_code) AS bolt_count, b.order_code
+        FROM bolt b
+        JOIN category cat ON b.cat_code = cat.cat_code
+        WHERE b.order_code IS NOT NULL
+        GROUP BY cat.cat_code, cat.cat_name, cat.color, b.order_code) cat_bolt 
+        ON cat_bolt.order_code = co.order_code
+    LEFT JOIN customer_phone cp ON c.customer_code = cp.customer_code
+    JOIN operational_staff os ON co.opcode = os.opcode
+    GROUP BY 
+        co.order_code, CONCAT(c.first_name, " ", c.last_name), co.process_datetime, co.order_datetime, 
+        cat_bolt.cat_name, cat_bolt.color, cat_bolt.bolt_count, 
+        co.price, co.remaining_price, co.status, co.reason, 
+        os.opcode, CONCAT(os.fname, " ", os.lname);
+        
+	SELECT pp.order_code, c.customer_code, CONCAT(c.first_name, " ", c.last_name) AS customer_name, co.order_datetime, 
+		pp.pay_datetime, pp.type, pp.amount
+	FROM paid_by_payment pp
+	JOIN customer c ON c.customer_code = pp.customer_code
+	JOIN customer_order co ON co.order_code = pp.order_code;
 END //
 
 DELIMITER ;

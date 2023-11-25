@@ -52,7 +52,9 @@ VALUES
 (3, '5678901234'),
 (3, '6789012345'),
 (4, '7890123456'),
-(4, '8901234567');
+(4, '8901234567'),
+(5, '2456235124'),
+(5, '7892354246');
 
 -- Insert data into the 'customer' table
 INSERT INTO customer (first_name, last_name, address, arrearage_amount, warning_time, debt_mode, office_code)
@@ -124,8 +126,8 @@ VALUES
 (150.00, '2023-10-28'),
 (220.00, '2023-10-28'),
 (260.00, '2023-10-28'),
+(230.00, '2020-08-28'),
 (100.00, '2023-10-28'),
-(230.00, '2023-10-28'),
 (170.00, '2023-10-28');
 
 -- Insert data into the 'supply' table
@@ -141,34 +143,32 @@ VALUES
 (7, 6, 5);
 
 -- Insert data into the 'customer_order' table
-INSERT INTO customer_order (opcode, number_of_bolts, status, reason, process_datetime, customer_code)
+INSERT INTO customer_order (opcode, order_datetime, number_of_bolts, status, reason, process_datetime, customer_code)
 VALUES
-(1, 0, 'new', NULL, '2023-11-11 12:30:00', 1),
-(1, 0, 'new', NULL, '2023-11-01 12:30:00', 1),
-(2, 10, 'partial paid', NULL, '2023-11-10 14:45:00', 2),
-(3, 8, 'full paid', NULL, '2023-11-09 10:00:00', 3),
-(4, 9, 'cancelled', 'Out of stock', '2023-11-08 16:20:00', 4),
-(4, 0, 'new', NULL, '2023-11-03 10:45:00', 4),
-(4, 9, 'cancelled', 'Out of stock', '2023-11-08 16:20:00', 4),
-(4, 0, 'new', NULL, '2023-11-02 09:30:00', 5),
-(4, 0, 'new', NULL, '2023-11-02 08:20:00', 5);
+(1, '2023-11-11 12:15:00', 0, 'new', NULL, '2023-11-11 12:30:00', 1),
+(1, '2023-11-01 12:15:00', 0, 'new', NULL, '2023-11-01 12:30:00', 1),
+(2, '2023-11-08 16:15:00', 9, 'cancelled', 'Out of stock', '2023-11-08 16:20:00', 4),
+(3, '2023-11-03 10:40:00', 0, 'new', NULL, '2023-11-03 10:45:00', 4),
+(3, '2023-11-08 16:25:00', 3, 'cancelled', 'Out of stock', '2023-11-08 16:30:00', 4),
+(4, '2023-11-02 09:25:00', 0, 'new', NULL, '2023-11-02 09:30:00', 5),
+(4, '2023-11-02 08:05:00', 0, 'new', NULL, '2023-11-02 08:20:00', 5);
 
 -- Insert data into the 'bolt' table
-INSERT INTO bolt (cat_code, bolt_length, order_code)
+INSERT INTO bolt (cat_code, bolt_length, import_code, order_code)
 VALUES
-(9, 5.5, 2),
-(9, 4.5, 2),
-(9, 3, NULL),
-(10, 5, 6),
-(11, 8.5, 6),
-(11, 6.0, NULL),
-(11, 2, NULL),
-(12, 2.5, 8),
-(12, 6, NULL), 
-(12, 6.5, NULL),
-(13, 3, NULL),
-(13, 3.5, 8),
-(14, 4, 8);
+(9, 5.5, 6, 2),
+(9, 4.5, 5, 2),
+(9, 3, 5, NULL),
+(10, 5, 2, 4),
+(11, 8.5, 3, 4),
+(11, 6.0, 4, NULL),
+(11, 2, 4, NULL),
+(12, 2.5, 7, 6),
+(12, 6, 7, NULL), 
+(12, 6.5, 7, NULL),
+(13, 3, 1, NULL),
+(13, 3.5, 1, 6),
+(14, 4, 1, 6);
 
 -- Update the status of some "new" orders to test the calculation of order price
 UPDATE customer_order
@@ -177,23 +177,23 @@ WHERE order_code = 2;
 
 UPDATE customer_order
 SET status = 'ordered'
-WHERE order_code = 6;
+WHERE order_code = 4;
 
 UPDATE customer_order
 SET status = 'ordered'
-WHERE order_code = 8;
+WHERE order_code = 6;
 
 -- Insert data into the 'paid_by_payment' table
 INSERT INTO paid_by_payment (order_code, customer_code, pay_datetime, type, amount)
 VALUES
 (2, 1, '2023-11-01 13:30:00', 'Partial', 100),
 (2, 1, '2023-11-01 14:45:00', 'Partial', 79.9),
-(6, 4, '2023-11-03 12:15:00', 'Partial', 300),
-(6, 4, '2023-11-03 14:30:00', 'Partial', 20.00);
+(4, 4, '2023-11-03 12:15:00', 'Partial', 300),
+(4, 4, '2023-11-03 14:30:00', 'Partial', 20.00);
 
 UPDATE customer_order 
 SET status = 'cancelled', reason = 'Do not want to buy'
-WHERE order_code = 8;
+WHERE order_code = 6;
 
 INSERT INTO admin_account (user_account)
 VALUES 
