@@ -112,6 +112,7 @@ CREATE TABLE customer_order (
     order_code INT AUTO_INCREMENT PRIMARY KEY,
     opcode INT,
 	customer_code INT NOT NULL,
+    order_datetime DATETIME,
     number_of_bolts INT DEFAULT 0,
     status VARCHAR(50) DEFAULT 'New',
     reason VARCHAR(255) DEFAULT NULL,
@@ -153,8 +154,10 @@ CREATE TABLE bolt (
     cat_code INT,
     bolt_code INT,
     bolt_length DECIMAL(10, 2) DEFAULT 0,
+    import_code INT,
     order_code INT,
     PRIMARY KEY (cat_code, bolt_code),
+    FOREIGN KEY (import_code) REFERENCES import_order(import_code),
     FOREIGN KEY (cat_code) REFERENCES category(cat_code),
     FOREIGN KEY (order_code) REFERENCES customer_order(order_code)
 );
