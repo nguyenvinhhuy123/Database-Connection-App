@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import compression from "compression";
 import bodyParser from "body-parser";
 
@@ -144,27 +144,30 @@ app.get("/category_detail_by_supplier/", (req, res) => {
   });
 });
 
-app.post("/category_detail_by_supplier/", (req, res) => {
+app.post("/category_detail_by_supplier/", async (req, res) => {
   var supplier_id = req.body.search_id;
   console.log(supplier_id);
-  const {supplier_data, cat_list} = cat_detail_by_supplier(supplier_id);
-  if (!supplier_data) { 
+  const { supplier_data, cat_list } = await cat_detail_by_supplier(supplier_id);
+  console.log(supplier_data);
+  console.log(cat_list.length);
+  if (!supplier_data || supplier_data.length == 0) { 
     return res.render("category_detail_by_supplier", {
     title: "Add information for a new supplier",
     message: "Can not find this supplier",
-    found_supplier: false,
   });
   }
-  if (!cat_list) { 
+  if (!cat_list || cat_list.length == 0) { 
+      console.log(cat_list.length);
       return res.render("category_detail_by_supplier", {
       title: "Add information for a new supplier",
       message: "This supplier does not have any supplied category",
-      found_supplier: true,
+      supplier_data: supplier_data
   });
   }
   return res.render("category_detail_by_supplier", {
-    title: "Add information for a new supplier",
-    found_supplier: true,
+    title: "Add information for a new supplier",  
+    supplier_data: supplier_data,
+    cat_list: cat_list
   });
 });
 

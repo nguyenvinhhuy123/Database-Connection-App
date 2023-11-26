@@ -4,29 +4,33 @@
         <%= title %>
     </h2>
     <form class="form-inline my-4" action="/category_detail_by_supplier" method="post">
-        <input class="form-control mr-sm-2" id="search_id" type="search" placeholder="Supplier ID" aria-label="Search">
+        <input class="form-control mr-sm-2" type="search"  id="search_id" name="search_id" minlength="1"
+        placeholder="Supplier ID" aria-label="Search">
         <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search Supplier</button>
     </form>
 
 
     <div class="mb-4">
-        <% if(typeof message !="undefined" && message) { %>
-            <%if (!found_supplier) { %>
+        <% if(typeof message != "undefined" && message) { %>
+            <%if (typeof supplier_data  == "undefined" || typeof cat_list  == "undefined") { %>
                 <div class="alert alert-danger" role="alert">
                     <%= message %>
                 </div>
             <% } %>
         <%} %>
-        <h4>Supplier Information</h4>
-        <!-- Display customer information dynamically based on the customer ID -->
-        <p>Supplier ID: <span id="supplierID">001</span></p>
-        <p>Name: <span id="supplierName">John Smith</span></p>
-        <p>Address: <span id="supplierAddress">125 Main St, City</span></p>
-        <p>Bank Account Number: <span id="supplierBankAccout">4442-9876-1952-2853</span></p>
-        <p>Tax Code: <span id="supplierTaxCode">4442-9876-1952-2853</span></p>
-        <p>Partner ID: <span id="supplierPartnerID">235</span></p>
+        <% if(typeof supplier_data != "undefined" && supplier_data) { %>
+            <h4>Supplier Information</h4>
+            <!-- Display customer information dynamically based on the customer ID -->
+            <p>Supplier ID: <span id="supplierID"> <%= supplier_data[0].sup_code %></span></p>
+            <p>Name: <span id="supplierName"><%= supplier_data[0].sup_name %></span></p>
+            <p>Address: <span id="supplierAddress"><%= supplier_data[0].address %></span></p>
+            <p>Bank Account Number: <span id="supplierBankAccout"><%= supplier_data[0].bank_account %></span></p>
+            <p>Tax Code: <span id="supplierTaxCode"><%= supplier_data[0].tax_code %></span></p>
+            <p>Partner ID: <span id="supplierPartnerID"><%= supplier_data[0].partner_code %></span></p>
+        <%}%>
+        
     </div>
-
+    <% if(typeof cat_list !="undefined" && cat_list) { %>
     <!-- Report Table -->
     <table class="table table-bordered">
         <thead>
@@ -35,31 +39,21 @@
                 <th>Category Name</th>
                 <th>Color</th>
                 <th>Quantity</th>
-                <th>Current Price</th>
-                <th>Price Adjusted Date</th>
-
+    
             </tr>
         </thead>
         <tbody>
-            <!-- Dummy Data -->
+        <% for(var i=0; i< cat_list.length; i++) { %>
             <tr>
-                <td>SILK001</td>
-                <td>Silk</td>
-                <td>Blue</td>
-                <td>5</td>
-                <td>$10.00</td>
-                <td>2023-1-1</td>
+                <td> <%= cat_list[i].cat_code %> </td>
+                <td> <%= cat_list[i].cat_name %> </td>
+                <td> <%= cat_list[i].color %> </td>
+                <td> <%= cat_list[i].quantity %> </td>
             </tr>
-            <tr>
-                <td>KHAKI002</td>
-                <td>Khaki</td>
-                <td>Beige</td>
-                <td>3</td>
-                <td>$8.00</td>
-                <td>2023-2-2</td>
-            </tr>
-            <!-- Add more rows as needed -->
+        <% } %>
         </tbody>
     </table>
+    <%}%>
+    
 
     <%- include('partials/_htmlfoot'); -%>
