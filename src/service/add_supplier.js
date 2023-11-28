@@ -22,7 +22,7 @@ export async function get_all_partner_id() {
   }
   catch (err) { 
     console.log(err);
-    return undefined;
+    throw err;
   }
 }
 export async function add_new_supplier(name, address, bank, tax, partner, phone) {
@@ -68,10 +68,6 @@ export async function add_new_supplier(name, address, bank, tax, partner, phone)
   }
   catch (err) {
     console.log(err);
-    return false;
-  }
-  finally
-  {
-    return false;
+    throw err
   }
 }

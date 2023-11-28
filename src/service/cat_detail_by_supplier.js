@@ -13,6 +13,7 @@ export async function cat_detail_by_supplier(supplier_id) {
             get_supplier_sql,
             [supplier_id]
         );
+        if (!supplier_data || supplier_data.length == 0) throw new Error("Can not find this supplier");
         var cat_list_sql =
             `
                 CALL GetCategoryDetailsBySupplier(?)
@@ -22,13 +23,13 @@ export async function cat_detail_by_supplier(supplier_id) {
             cat_list_sql,
             [supplier_id]
         );
-        console.log(cat_res)
-        const cat_list = cat_res[0]
+        
+        const cat_list = cat_res[0];
         return { supplier_data, cat_list };
     }
     catch (err) { 
         console.log(err);
-        return undefined;
+        throw err;
     }
     
 }
