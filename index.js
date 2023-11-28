@@ -9,6 +9,7 @@ import { testConnection } from "./db.js";
 import { authentication } from "./src/service/auth.js";
 import { add_new_supplier, get_all_partner_id } from "./src/service/add_supplier.js";
 import { cat_detail_by_supplier } from "./src/service/cat_detail_by_supplier.js";
+import { error } from "console";
 
 const __dirname = dirname(fileURLToPath(import.meta.url)) + sep;
 const cfg = {
@@ -100,8 +101,9 @@ app.post("/add_new_supplier/", async (req, res) => {
   var tax_id = req.body.tax;
   var partner_id = req.body.partner;
   var phone_number = req.body.phone;
+  const partner_id_list = await get_all_partner_id();
+
   if (!name || !address || !bank_id || !tax_id || !partner_id || !phone_number) {
-    const partner_id_list = await get_all_partner_id();
     return res.render("add_new_supplier", {
       title: "Add information for a new supplier",
       id_list: partner_id_list,
@@ -110,31 +112,30 @@ app.post("/add_new_supplier/", async (req, res) => {
     });
   }
   console.log(name);
-  var add_this_supplier = await add_new_supplier(
-    name,
-    address,
-    bank_id,
-    tax_id,
-    partner_id,
-    phone_number
-  );
-
-  if (!add_this_supplier) {
-    const partner_id_list = await get_all_partner_id();
+  try {
+    var add_this_supplier = await add_new_supplier(
+      name,
+      address,
+      bank_id,
+      tax_id,
+      partner_id,
+      phone_number
+    );
     return res.render("add_new_supplier", {
       title: "Add information for a new supplier",
       id_list: partner_id_list,
-      message: "Please enter all information",
+      message: "Add new supplier successful",
+      add_successful: true,
+    });
+  }
+  catch (error) { 
+    return res.render("add_new_supplier", {
+      title: "Add information for a new supplier",
+      id_list: partner_id_list,
+      message: error.message,
       add_successful: false,
     });
   }
-  const partner_id_list = await get_all_partner_id();
-  return res.render("add_new_supplier", {
-      title: "Add information for a new supplier",
-      id_list: partner_id_list,
-      message: "Please enter all information",
-      add_successful: false,
-    });
 });
 
 //3. List details of all categories which are provided by a supplier.
@@ -146,29 +147,27 @@ app.get("/category_detail_by_supplier/", (req, res) => {
 
 app.post("/category_detail_by_supplier/", async (req, res) => {
   var supplier_id = req.body.search_id;
-  console.log(supplier_id);
-  const { supplier_data, cat_list } = await cat_detail_by_supplier(supplier_id);
-  console.log(supplier_data);
-  console.log(cat_list.length);
-  if (!supplier_data || supplier_data.length == 0) { 
-    return res.render("category_detail_by_supplier", {
-    title: "Add information for a new supplier",
-    message: "Can not find this supplier",
-  });
-  }
-  if (!cat_list || cat_list.length == 0) { 
-      console.log(cat_list.length);
+  try {
+    const { supplier_data, cat_list } = await cat_detail_by_supplier(supplier_id);
+    if (!cat_list || cat_list.length == 0) { 
       return res.render("category_detail_by_supplier", {
       title: "Add information for a new supplier",
-      message: "This supplier does not have any supplied category",
-      supplier_data: supplier_data
-  });
+      supplier_data: supplier_data,
+      message: "This supplier does not have a supplied good yet!!!",
+    });
+    }
+    return res.render("category_detail_by_supplier", {
+      title: "Add information for a new supplier",
+      supplier_data: supplier_data,
+      cat_list: cat_list
+    });
   }
-  return res.render("category_detail_by_supplier", {
-    title: "Add information for a new supplier",  
-    supplier_data: supplier_data,
-    cat_list: cat_list
-  });
+  catch (err) {
+    return res.render("category_detail_by_supplier", {
+      title: "Add information for a new supplier",
+      message: err.message,
+    });
+  }
 });
 
 // 4. Report full information about the order for each category of a customer.
