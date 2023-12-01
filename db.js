@@ -15,6 +15,25 @@ const db = await mysqlPromise.createPool({
   queueLimit: 0,
 });
 
+export async function getMaterialPurchasingInfo() {
+  const [res] = await db.query(`
+    CALL MaterialPurchasingInformation();
+  `);
+
+  return res[0];
+}
+
+export async function reportOrderPerCategoryForCustomer() {
+  const [res] = await db.query(`
+    CALL GenerateOrderReport();
+    `);
+
+  return {
+    report1: res[0],
+    report2: res[1],
+  };
+}
+
 export async function testConnection() {
   const [res] = await db.query(
     `
