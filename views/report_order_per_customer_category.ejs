@@ -2,50 +2,72 @@
 
 <h2><%= title %></h2>
 
-<div class="mb-4">
-  <h4>Customer Information</h4>
-  <!-- Display customer information dynamically based on the customer ID -->
-  <p>Customer ID: <span id="customerId">123</span></p>
-  <p>Name: <span id="customerName">John Doe</span></p>
-  <p>Address: <span id="customerAddress">123 Main St, City</span></p>
-  <p>Phone Number: <span id="customerPhone">555-1234</span></p>
-</div>
-
 <!-- Report Table -->
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th>Category Code</th>
+      <th>Order Code</th>
+      <th>Customer Name</th>
+      <th>Customer Phone Number</th>
+      <th>Order Time</th>
+      <th>Process Time</th>
       <th>Category Name</th>
       <th>Color</th>
-      <th>Current Price</th>
-      <th>Quantity</th>
-      <th>Order Date</th>
-      <th>Purchase Price</th>
+      <th>Bolt Count</th>
+      <th>Total price</th>
+      <th>Debt amount</th>
+      <th>Status</th>
+      <th>Reason</th>
+      <th>Opcode</th>
+      <th>Operator name</th>
     </tr>
   </thead>
   <tbody>
-    <!-- Dummy Data -->
+    <% for (let row of report1) { %>
     <tr>
-      <td>SILK001</td>
-      <td>Silk</td>
-      <td>Blue</td>
-      <td>$10.00</td>
-      <td>5</td>
-      <td>2023-11-12</td>
-      <td>$50.00</td>
+      <td><%= row.order_code %></td>
+      <td><%= row.customer_name %></td>
+      <td><%= row.customer_phone %></td>
+      <td><%= row.order_datetime.toLocaleString() %></td>
+      <td><%= row.process_datetime.toLocaleString() %></td>
+      <td><%= row.cat_name %></td>
+      <td><%= row.color %></td>
+      <td><%= row.bolt_count %></td>
+      <td><%= row.total_price %></td>
+      <td><%= row.debt_amount %></td>
+      <td><%= row.status %></td>
+      <td><%= row.reason %></td>
+      <td><%= row.opcode %></td>
+      <td><%= row.operator_name %></td>
     </tr>
-    <tr>
-      <td>KHAKI002</td>
-      <td>Khaki</td>
-      <td>Beige</td>
-      <td>$8.00</td>
-      <td>3</td>
-      <td>2023-11-11</td>
-      <td>$24.00</td>
-    </tr>
-    <!-- Add more rows as needed -->
+    <% } %>
   </tbody>
 </table>
 
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Order Code</th>
+      <th>Customer Code</th>
+      <th>Customer Name</th>
+      <th>Order Time</th>
+      <th>Pay Time</th>
+      <th>Type</th>
+      <th>Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% for (let row of report2) { %>
+    <tr>
+      <td><%= row.order_code %></td>
+      <td><%= row.customer_code %></td>
+      <td><%= row.customer_name %></td>
+      <td><%= row.order_datetime.toLocaleString() %></td>
+      <td><%= row.pay_datetime.toLocaleString() %></td>
+      <td><%= row.type %></td>
+      <td><%= row.amount %></td>
+    </tr>
+    <% } %>
+  </tbody>
+</table>
 <%- include('partials/_htmlfoot'); -%>

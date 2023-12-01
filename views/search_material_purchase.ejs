@@ -1,35 +1,36 @@
 <%- include('partials/_htmlhead'); -%>
 
-    <h2><%= title %></h2>
-    
-    <!-- Search Form -->
-    <form class="form-inline my-4">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
-    </form>
+<h2><%= title %></h2>
 
-    <!-- Search Results Table -->
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Phone Number</th>
-                <th>Supply Information</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Dummy Data -->
-            <tr>
-                <td>Supplier 1</td>
-                <td>(555) 123-4567</td>
-                <td>Material A, Material B</td>
-            </tr>
-            <tr>
-                <td>Supplier 2</td>
-                <td>(555) 987-6543</td>
-                <td>Material C, Material D</td>
-            </tr>
-        </tbody>
-    </table>
+<!-- Search Results Table -->
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Import code</th>
+      <th>Import data</th>
+      <th>Category name</th>
+      <th>Color</th>
+      <th>Quantity</th>
+      <th>Supplier name</th>
+      <th>Supplier's phone number</th>
+      <th>Total order price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <!-- Dummy Data -->
+    <% for (let row of JSON.parse(data)) { %>
+    <tr>
+      <td><%= row.import_code %></td>
+      <td><%= new Date(row.import_date).toLocaleString() %></td>
+      <td><%= row.cat_name %></td>
+      <td><%= row.color %></td>
+      <td><%= row.quantity %></td>
+      <td><%= row.sup_name %></td>
+      <td><%= row.supplier_phone %></td>
+      <td><%= row.total_order_price %></td>
+    </tr>
+    <% } %>
+  </tbody>
+</table>
 
 <%- include('partials/_htmlfoot'); -%>
