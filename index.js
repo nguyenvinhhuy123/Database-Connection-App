@@ -82,7 +82,7 @@ app.get("/home-page", async (req, res) => {
   const data = await testConnection();
   res.render("message", {
     title: "Welcome to our database system assignment 2!",
-    message: JSON.stringify(data),
+    message: "Welcome to our database system assignment 2!!"
   });
 });
 
