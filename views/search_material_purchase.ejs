@@ -2,6 +2,11 @@
 
 <h2><%= title %></h2>
 
+<form class="form-inline my-4" action="/search-material-purchasing/" method="post">
+  <input class="form-control mr-sm-2" type="search" id="search" name="search" minlength="1"
+  placeholder="Category" aria-label="Search">
+  <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search Category</button>
+</form>
 <!-- Search Results Table -->
 <table class="table table-bordered">
   <thead>
@@ -18,17 +23,34 @@
   </thead>
   <tbody>
     <!-- Dummy Data -->
-    <% for (let row of JSON.parse(data)) { %>
-    <tr>
-      <td><%= row.import_code %></td>
-      <td><%= new Date(row.import_date).toLocaleString() %></td>
-      <td><%= row.cat_name %></td>
-      <td><%= row.color %></td>
-      <td><%= row.quantity %></td>
-      <td><%= row.sup_name %></td>
-      <td><%= row.supplier_phone %></td>
-      <td><%= row.total_order_price %></td>
-    </tr>
+    <% if (typeof cat_search != "undefined" && cat_search){ %>
+      <% for (let row of JSON.parse(data)) { %>
+        <% if (row.cat_name.includes(cat_search)){ %>
+        <tr>
+          <td><%= row.import_code %></td>
+          <td><%= new Date(row.import_date).toLocaleString() %></td>
+          <td><%= row.cat_name %></td>
+          <td><%= row.color %></td>
+          <td><%= row.quantity %></td>
+          <td><%= row.sup_name %></td>
+          <td><%= row.supplier_phone %></td>
+          <td><%= row.total_order_price %></td>
+        </tr>
+        <% } %>
+      <% } %>
+    <% } else { %>
+      <% for (let row of JSON.parse(data)) { %>
+        <tr>
+          <td><%= row.import_code %></td>
+          <td><%= new Date(row.import_date).toLocaleString() %></td>
+          <td><%= row.cat_name %></td>
+          <td><%= row.color %></td>
+          <td><%= row.quantity %></td>
+          <td><%= row.sup_name %></td>
+          <td><%= row.supplier_phone %></td>
+          <td><%= row.total_order_price %></td>
+        </tr>
+      <% } %>
     <% } %>
   </tbody>
 </table>

@@ -2,6 +2,11 @@
 
 <h2><%= title %></h2>
 
+<form class="form-inline my-4" action="/report-order-per-customer-category/" method="post">
+  <input class="form-control mr-sm-2" type="search" id="search" name="search" minlength="1"
+  placeholder="Customer Name" aria-label="Search">
+  <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search Customer</button>
+</form>
 <!-- Report Table -->
 <table class="table table-bordered">
   <thead>
@@ -23,23 +28,46 @@
     </tr>
   </thead>
   <tbody>
-    <% for (let row of report1) { %>
-    <tr>
-      <td><%= row.order_code %></td>
-      <td><%= row.customer_name %></td>
-      <td><%= row.customer_phone %></td>
-      <td><%= row.order_datetime.toLocaleString() %></td>
-      <td><%= row.process_datetime.toLocaleString() %></td>
-      <td><%= row.cat_name %></td>
-      <td><%= row.color %></td>
-      <td><%= row.bolt_count %></td>
-      <td><%= row.total_price %></td>
-      <td><%= row.debt_amount %></td>
-      <td><%= row.status %></td>
-      <td><%= row.reason %></td>
-      <td><%= row.opcode %></td>
-      <td><%= row.operator_name %></td>
-    </tr>
+    <% if (typeof cus_search != "undefined" && cus_search){ %>
+      <% for (let row of report1) { %>
+        <% if (row.customer_name.includes(cus_search)){ %>
+        <tr>
+          <td><%= row.order_code %></td>
+          <td><%= row.customer_name %></td>
+          <td><%= row.customer_phone %></td>
+          <td><%= row.order_datetime.toLocaleString() %></td>
+          <td><%= row.process_datetime.toLocaleString() %></td>
+          <td><%= row.cat_name %></td>
+          <td><%= row.color %></td>
+          <td><%= row.bolt_count %></td>
+          <td><%= row.total_price %></td>
+          <td><%= row.debt_amount %></td>
+          <td><%= row.status %></td>
+          <td><%= row.reason %></td>
+          <td><%= row.opcode %></td>
+          <td><%= row.operator_name %></td>
+        </tr>
+        <% } %>
+      <% } %>
+    <% } else { %>
+      <% for (let row of report1) { %>
+        <tr>
+          <td><%= row.order_code %></td>
+          <td><%= row.customer_name %></td>
+          <td><%= row.customer_phone %></td>
+          <td><%= row.order_datetime.toLocaleString() %></td>
+          <td><%= row.process_datetime.toLocaleString() %></td>
+          <td><%= row.cat_name %></td>
+          <td><%= row.color %></td>
+          <td><%= row.bolt_count %></td>
+          <td><%= row.total_price %></td>
+          <td><%= row.debt_amount %></td>
+          <td><%= row.status %></td>
+          <td><%= row.reason %></td>
+          <td><%= row.opcode %></td>
+          <td><%= row.operator_name %></td>
+        </tr>
+        <% } %>
     <% } %>
   </tbody>
 </table>
@@ -57,16 +85,32 @@
     </tr>
   </thead>
   <tbody>
-    <% for (let row of report2) { %>
-    <tr>
-      <td><%= row.order_code %></td>
-      <td><%= row.customer_code %></td>
-      <td><%= row.customer_name %></td>
-      <td><%= row.order_datetime.toLocaleString() %></td>
-      <td><%= row.pay_datetime.toLocaleString() %></td>
-      <td><%= row.type %></td>
-      <td><%= row.amount %></td>
-    </tr>
+    <% if (typeof cus_search != "undefined" && cus_search){ %>
+      <% for (let row of report2) { %>
+        <% if (row.customer_name.includes(cus_search)){ %>
+          <tr>
+            <td><%= row.order_code %></td>
+            <td><%= row.customer_code %></td>
+            <td><%= row.customer_name %></td>
+            <td><%= row.order_datetime.toLocaleString() %></td>
+            <td><%= row.pay_datetime.toLocaleString() %></td>
+            <td><%= row.type %></td>
+            <td><%= row.amount %></td>
+          </tr>
+        <% } %>
+      <% } %>
+    <% } else { %>
+      <% for (let row of report2) { %>
+        <tr>
+          <td><%= row.order_code %></td>
+          <td><%= row.customer_code %></td>
+          <td><%= row.customer_name %></td>
+          <td><%= row.order_datetime.toLocaleString() %></td>
+          <td><%= row.pay_datetime.toLocaleString() %></td>
+          <td><%= row.type %></td>
+          <td><%= row.amount %></td>
+        </tr>
+        <% } %>
     <% } %>
   </tbody>
 </table>

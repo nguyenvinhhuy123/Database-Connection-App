@@ -1,6 +1,7 @@
 import express, { json } from "express";
 import compression from "compression";
 import bodyParser from "body-parser";
+import cookieParser from "cookie-parser";
 
 import { fileURLToPath } from "url";
 import { dirname, sep } from "path";
@@ -17,6 +18,7 @@ import {
 } from "./src/service/add_supplier.js";
 import { cat_detail_by_supplier } from "./src/service/cat_detail_by_supplier.js";
 import { error } from "console";
+import session from "express-session"
 
 const __dirname = dirname(fileURLToPath(import.meta.url)) + sep;
 const cfg = {
@@ -32,6 +34,16 @@ console.dir(cfg, { depth: null, color: true });
 const app = express();
 app.disable("x-powered-by");
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+const expiryDate =  60 * 60 * 1000 // 1 hour
+app.use(session({
+    secret: 'your_secret_key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true, maxAge:expiryDate }
+  }
+))
 
 app.set("view engine", "ejs");
 app.set("views", cfg.dir.views);
@@ -39,8 +51,12 @@ app.use(compression());
 app.use(express.static(cfg.dir.static));
 
 var credential = false;
+var current_session
 app.get("/", (req, res) => {
-  if (!credential) return res.redirect("/auth");
+  current_session = req.session
+  if(!current_session.userid){
+    return res.redirect("/auth");
+  }
   return res.redirect("/home-page");
 });
 app.get("/log_out");
@@ -48,6 +64,7 @@ app.get("/log_out");
 app.post("/log_out", (req, res) => {
   console.log("logged out");
   credential = false;
+  req.session.destroy();
   res.redirect("/");
 });
 
@@ -69,16 +86,24 @@ app.post("/auth", async (req, res) => {
     var auth_accepted = await authentication(username, password);
     if (auth_accepted) {
       credential = true;
-      return res.redirect("/home-page");
+      req.session.userid=req.body.username;
+      current_session=req.session;
+      console.log(req.session)
+      res.redirect("/home-page");
     }
+    else
+    {
+      return res.render("login/login", {
+        message: "Username or password incorrect",
+      });
+    }
+    
   }
-  return res.render("login/login", {
-    message: "Username or password incorrect",
-  });
 });
 
 // 0. Home page route
 app.get("/home-page", async (req, res) => {
+  console.log(req.session)
   const data = await testConnection();
   res.render("message", {
     title: "Welcome to our database system assignment 2!",
@@ -92,6 +117,15 @@ app.get("/search-material-purchasing/", async (req, res) => {
   res.render("search_material_purchase", {
     title: "Search material purchasing information",
     data: JSON.stringify(data),
+  });
+});
+app.post("/search-material-purchasing/", async (req, res) => {
+  const cat = req.body.search
+  const data = await getMaterialPurchasingInfo();
+  res.render("search_material_purchase", {
+    title: "Search material purchasing information",
+    data: JSON.stringify(data),
+    cat_search : cat
   });
 });
 
@@ -193,6 +227,17 @@ app.get("/report-order-per-customer-category/", async (req, res) => {
     title: "Report information about the order for each category of a customer",
     report1,
     report2,
+  });
+});
+
+app.post("/report-order-per-customer-category/", async (req, res) => {
+  const customer = req.body.search
+  const { report1, report2 } = await reportOrderPerCategoryForCustomer();
+  res.render("report_order_per_customer_category", {
+    title: "Report information about the order for each category of a customer",
+    report1,
+    report2,
+    cus_search: customer
   });
 });
 
